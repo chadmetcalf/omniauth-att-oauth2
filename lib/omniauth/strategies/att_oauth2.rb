@@ -1,37 +1,44 @@
+require 'multi_json'
+require 'omniauth'
+require 'omniauth-oauth2'
 require 'omniauth/strategies/oauth2'
+require 'json'
+require 'syslog'
 
 module OmniAuth
   module Strategies
     class AttOauth2 < OmniAuth::Strategies::OAuth2
       
-      args [:client_id, :client_secret, :short_code]
-
-      option :name, 'att_oauth2'
+      args [:client_id, :client_secret]
+      
+      option :name, "att_oauth2"
       option :authorize_options, [:scope]
       option :short_code, nil
+      # option :state
 
       option :client_options, {
-        :site          => 'https://api.att.com',
-        :authorize_url => '/oauth/authorize',
-        :token_url     => '/oauth/token',
+        :site             => 'https://api.att.com',
+        :authorize_url    => '/oauth/authorize',
+        :token_url        => '/oauth/token',
+        :endpoint_msisidn => "",
+        :raise_errors     => true
       }
 
-      # This is where you pass the options you would pass when
-      # initializing your consumer from the OAuth gem.
-      
+      option :token_params, {
+        :parse => :json
+      }
 
-      # These are called after authentication has succeeded. If
-      # possible, you should try to set the UID without making
-      # additional calls (if the user id is returned with the token
-      # or as a URI parameter). This may not be possible with all
-      # providers.
-      uid{ raw_info['id'] }
+      # These are called after authentication has succeeded. 
+      uid{ raw_info['uid'] }
 
       info do
-        {
-          :name => raw_info['name'],
-          :email => raw_info['email']
-        }
+        prune!({
+          :name               => raw_info['info']['name'],
+          :phone_number       => raw_info['info']['phone_number'],
+          :email              => raw_info['info']['email'],
+          :first_name         => raw_info['info']['first_name'],
+          :last_name          => raw_info['info']['last_name']
+        })
       end
 
       extra do
@@ -40,28 +47,24 @@ module OmniAuth
         }
       end
 
-      def raw_info
-        @raw_info ||= access_token.get('/me').parsed
+      def request_phase
+        Syslog.open($0, Syslog::LOG_PID | Syslog::LOG_CONS) { |s| s.warning "IN THE CUSTOM request" }
+        options[:scope] ||= "SMS,MMS,TL,DC"
+        options[:authorize_params][:response_type] ||= 'code'
+        options[:authorize_params][:state] = options[:state]
+        super
       end
-      
-      
-      
       
       #######################
-      
-      def authenticate_user_url
-        "https://api.att.com/rest/sms/2/messaging/outbox"
-      end
-      
-      def authorize_user_json        
-         # --insecure
-         # --request POST
-         # --header "Accept: application/json"
-         # --header "Authorization: Bearer 1c2939fd20f25a6e4d1dfe3801a9edc9"
-         # --data "Address=tel%3A9139088480&Message='https://auth-api.att.com/user/login?client_id=#{}%26scope=SMS,TL"
-      end
-      
+      # def request_phase
+      #   raise 
+      #   options[:scope] ||= "SMS,MMS,TL,DC"
+      #   redirect client.auth_code.authorize_url(
+      #     {:redirect_uri => callback_url, :response_type => "code"}.merge(options))
+      # end
 
     end
   end
 end
+
+OmniAuth.config.add_camelization 'att', 'Att'

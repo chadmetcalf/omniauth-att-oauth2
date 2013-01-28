@@ -13,8 +13,8 @@ Gem::Specification.new do |gem|
 
   gem.authors       = ["Michael Bleigh", "Chad Metcalf"]
   gem.email         = ["cm0591@gmail.com"]
-  gem.description   = %q{An abstract OAuth2 strategy for OmniAuth.}
-  gem.summary       = %q{An abstract OAuth2 strategy for OmniAuth.}
+  gem.description   = %q{AT&T OAuth2 strategy for OmniAuth.}
+  gem.summary       = %q{AT&T OAuth2 strategy for OmniAuth.}
   gem.homepage      = "https://github.com/intridea/omniauth-oauth2"
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
