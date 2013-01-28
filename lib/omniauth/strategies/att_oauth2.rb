@@ -3,7 +3,6 @@ require 'omniauth'
 require 'omniauth-oauth2'
 require 'omniauth/strategies/oauth2'
 require 'json'
-require 'syslog'
 
 module OmniAuth
   module Strategies
