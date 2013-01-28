@@ -13,8 +13,9 @@ module OmniAuth
       option :name, "att_oauth2"
       option :authorize_options, [:scope]
       option :short_code, nil
-
+      
       option :client_options, {
+        # :verify           => false,
         :site             => 'https://api.att.com',
         :authorize_url    => '/oauth/authorize',
         :token_url        => '/oauth/token',
@@ -24,7 +25,7 @@ module OmniAuth
       }
 
       option :token_params, {
-        :parse => :json
+        :parse => :json,
       }
 
       def request_phase
