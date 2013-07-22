@@ -11,7 +11,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'webmock'
   gem.add_development_dependency 'simplecov'
 
-  gem.authors       = ["Michael Bleigh", "Chad Metcalf"]
+  gem.authors       = ["Chad Metcalf"]
   gem.email         = ["cm0591@gmail.com"]
   gem.description   = %q{AT&T OAuth2 strategy for OmniAuth.}
   gem.summary       = %q{AT&T OAuth2 strategy for OmniAuth.}
